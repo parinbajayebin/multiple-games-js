@@ -1,0 +1,92 @@
+<html>
+<head>
+<style>
+*{
+margin:0px;
+padding:0px;
+}
+
+*{
+  box-sizing:border-box;
+  font-family: 'Skranji', cursive;
+     animation:fade-in 2s cubic-bezier(.39,.575,.565,1.000) both;
+}
+
+@keyframes fade-in{0%{opacity:0}100%{opacity:1}}
+
+.bigimage{
+width:100vw;
+height:100vh;
+background-image:url("intro.jpg");
+background-size:cover;
+}
+
+.text{
+font-family:QuinqueFive;
+line-height:2.2;
+font-size:14px;
+max-width:870px;
+padding:1em;
+font-weight:bold;
+margin-top: -220px;
+margin-right:40px;
+}
+
+
+button {
+  background-color:#8b6c5c;
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+  color:white;
+}
+
+button:hover {  
+  background-color: red;
+  color: white;
+}
+
+.previous {
+  background-color: white;
+  color: black;
+}
+
+.button{
+margin-top:650px;
+margin-left:1125px;
+}
+</style>
+</head>
+<body>
+<div class="bigimage">
+<form action="stagee3.html">
+<button class="button">▶</button>
+</form>
+<center>
+<div class="text"></div>
+<script>
+	const div=document.querySelector(".text");
+	const text="Ray: Oi, Skurj! What's this mess? Skurj: Hehe, trapped ye in me maze, Ray! No escape, unless ye solve me riddles. Ray: Riddles? Fine, hit me. Skurj: First'un! What has keys but can't open locks? Ray: Uh... I dunno. Skurj: A piano! Haha! Stuck ye are! Now ye are trapped in my maze hahahahaha!";
+	
+	function texteffect(element,text,i=0){
+	if (i==0){
+	element.textContent=" ";
+	}
+	
+	element.textContent+=text[i];
+	
+	if(i==text.length-1)
+	{
+		return;
+	}
+	
+	setTimeout(()=>texteffect(element,text,i+1),50);
+	
+	}
+	
+	texteffect(div,text);
+</script>
+</div>
+</div>
+</body>
+</html>

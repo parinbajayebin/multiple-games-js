@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <style>
+*{
+  box-sizing:border-box;
+  font-family: 'Skranji', cursive;
+     animation:fade-in 2s cubic-bezier(.39,.575,.565,1.000) both;
+}
+
+@keyframes fade-in{0%{opacity:0}100%{opacity:1}}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background:url("blurr.jpg");
+}
+
+#game-container {
+    position: relative;
+    width: 800px;
+    height: 690px; 
+    border: 2px solid #fff;
+	background:beige;	
+}
+
+.tile {
+    width: 40px; 
+    height: 40px; 
+    position: absolute;
+}
+
+.wall {
+    background-color: #444;
+	background:url(ww1.png);
+}
+
+.character {
+    background-color: beige; 
+    width: 40px; 
+    height: 40px; 
+    position: absolute;
+}
+
+.coin {
+    background-color: #ffd700; 
+    width: 20px; 
+    height: 20px; 
+    position: absolute;
+	border-radius:50%;
+	border:3px solid black;
+}
+
+.enemy {
+    background-color: #f00; 
+    width: 40px; 
+    height: 40px; 
+    position: absolute;
+}
+
+#score-display {
+    margin-top: 20px;
+    color:white;
+}
+
+#score, #time, #game-status {
+    font-size: 18px;
+	font-weight:bold;
+    margin: 5px 0;
+}
+
+.link{
+margin-right:1500px;
+}
+a{
+text-decoration:none;
+}
+    </style>
+</head>
+<body>
+<a class="link" href="background_fn.html" title="Once you live you die" style="font-size:25px;">❌</a>
+<br>
+    <div id="game-container" style="position: relative;"></div>
+    <div id="score">Score: 0</div>
+    <div id="time">Time: 0</div>
+    <div id="game-status"></div>
+
+    <script>
+        // Your JavaScript code goes here
+        var map = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+	var enemies = [
+    { x: 2, y: 2 },
+    { x: 9, y: 12 },
+    { x: 4, y: 4 },
+    // Left-right movement enemies
+    { x: 3, y: 1, direction: 1 },
+    { x: 5, y: 1, direction: -1 },
+    // Up-down movement enemies
+     // Changed the initial y position
+    // Additional enemies
+    { x: 8, y: 8, direction: 1 },
+    { x: 10, y: 10, direction: -1 },
+    // Add more enemies here
+    { x: 12, y: 5, direction: 1 },
+    { x: 14, y: 8, direction: -1 },
+    { x: 6, y: 10, direction: 1 },
+    { x: 11, y: 4, direction: -1 },
+];
+
+
+        var characterPosition = { x: 1, y: 1 };
+        var score = 0;
+        var time = 60; // Initial time in seconds
+        var gameInterval;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            generateMap();
+            generateCharacter();
+            generateCoins();
+			 generateEnemies(); 
+            updateScore();
+            updateClock();
+            startGame();
+        });
+
+        function generateMap() {
+    var gameContainer = document.getElementById("game-container");
+
+    for (var i = 0; i < map.length; i++) {
+        for (var j = 0; j < map[i].length; j++) {
+            var tile = document.createElement("div");
+            tile.className = "tile";
+            tile.style.top = i * 40 + "px";
+            tile.style.left = j * 40 + "px";
+
+            if (map[i][j] === 1) {
+                tile.className += " wall";
+            } else if (map[i][j] === 2) {
+                tile.className += " tree";
+            }
+
+            gameContainer.appendChild(tile);
+        }
+    }
+}
+
+
+function generateEnemies() {
+    var gameContainer = document.getElementById("game-container");
+
+    for (var i = 0; i < enemies.length; i++) {
+        var enemy = document.createElement("img");
+        enemy.className = "enemy";
+        enemy.src = "ene1.gif"; // Replace with the path to your enemy image
+        enemy.style.position = "absolute";
+        enemy.style.top = enemies[i].y * 40 + "px";
+        enemy.style.left = enemies[i].x * 40 + "px";
+        gameContainer.appendChild(enemy);
+
+        // Add enemy object to the DOM element to store direction
+        enemy.direction = enemies[i].direction || 1;
+    }
+
+    // Set interval to move enemies every 500 milliseconds
+    setInterval(moveEnemies, 500);
+}
+
+function moveEnemies() {
+    var gameContainer = document.getElementById("game-container");
+    var enemiesList = gameContainer.querySelectorAll(".enemy");
+
+    enemiesList.forEach(function(enemy) {
+        // Parse current position
+        var currentX = parseInt(enemy.style.left) / 40;
+        var currentY = parseInt(enemy.style.top) / 40;
+
+        // Update position based on direction
+        var newX = currentX + enemy.direction;
+        var newY = currentY;
+
+        // Check boundaries to prevent enemies from going outside the box
+        if (newX >= 0 && newX < map[0].length && newY >= 0 && newY < map.length && map[newY][newX] !== 1) {
+            enemy.style.left = newX * 40 + "px";
+            enemy.style.top = newY * 40 + "px";
+        } else {
+            // Change direction when hitting a wall or reaching the boundary
+            enemy.direction *= -1;
+        }
+    });
+}
+       function generateCharacter() {
+    var gameContainer = document.getElementById("game-container");
+    var character = document.createElement("img");
+    character.src = "t.jpg"; // Replace with the path to your character image
+    character.className = "character";
+    character.style.top = characterPosition.y * 40 + "px";
+    character.style.left = characterPosition.x * 40 + "px";
+    gameContainer.appendChild(character);
+}
+
+
+        function generateCoins() {
+            var gameContainer = document.getElementById("game-container");
+
+            // Add three coins to the map
+            for (var i = 0; i < 3; i++) {
+                var coin = document.createElement("div");
+                coin.className = "coin";
+                var coinPosition = getRandomPosition();
+                coin.style.top = coinPosition.y * 40 + "px";
+                coin.style.left = coinPosition.x * 40 + "px";
+                gameContainer.appendChild(coin);
+            }
+        }
+
+        function getRandomPosition() {
+            var emptyPositions = [];
+            for (var i = 0; i < map.length; i++) {
+                for (var j = 0; j < map[i].length; j++) {
+                    if (map[i][j] === 0) {
+                        emptyPositions.push({ x: j, y: i });
+                    }
+                }
+            }
+
+            if (emptyPositions.length === 0) {
+                return { x: 0, y: 0 }; // default location
+            }
+
+            var randomIndex = Math.floor(Math.random() * emptyPositions.length);
+            return emptyPositions[randomIndex];
+        }
+
+        document.addEventListener("keydown", function(event) {
+            // arrow key moves the character
+            switch (event.key) {
+                case "ArrowUp":
+                    moveCharacter(0, -1);
+                    break;
+                case "ArrowDown":
+                    moveCharacter(0, 1);
+                    break;
+                case "ArrowLeft":
+                    moveCharacter(-1, 0);
+                    break;
+                case "ArrowRight":
+                    moveCharacter(1, 0);
+                    break;
+            }
+        });
+
+        function moveCharacter(dx, dy) {
+        var newCharacterX = characterPosition.x + dx;
+        var newCharacterY = characterPosition.y + dy;
+
+        if (
+            newCharacterX >= 0 &&
+            newCharacterX < map[0].length &&
+            newCharacterY >= 0 &&
+            newCharacterY < map.length
+        ) {
+            if (map[newCharacterY][newCharacterX] === 1) {
+        // The character touched the wall, end the game
+        endGame(false);
+        return;
+    }
+
+    // Check if the character touched an enemy
+    var enemiesList = document.querySelectorAll(".enemy");
+    for (var i = 0; i < enemiesList.length; i++) {
+        var enemyX = parseInt(enemiesList[i].style.left) / 40;
+        var enemyY = parseInt(enemiesList[i].style.top) / 40;
+
+        if (newCharacterX === enemyX && newCharacterY === enemyY) {
+            // The character touched an enemy, end the game
+            endGame(false);
+            return;
+        }
+    }
+            // Update the character position
+            characterPosition.x = newCharacterX;
+            characterPosition.y = newCharacterY;
+
+            // Update the character position on the screen
+            var character = document.querySelector(".character");
+            character.style.top = characterPosition.y * 40 + "px";
+            character.style.left = characterPosition.x * 40 + "px";
+
+            // Check if the character is at a coin position
+            var coins = document.querySelectorAll(".coin");
+            coins.forEach(function (coin) {
+                if (
+                    characterPosition.x === parseInt(coin.style.left) / 40 &&
+                    characterPosition.y === parseInt(coin.style.top) / 40
+                ) {
+                    // Character collected a coin, increase score and remove the coin
+                    score += 5;
+                    coin.remove();
+                    updateScore();
+
+                    // Check if all coins are collected
+                    if (document.querySelectorAll(".coin").length === 0) {
+                        endGame(true);
+                    }
+                }
+            });
+        } else {
+            // The character is out of bounds, end the game
+            endGame(false);
+        }
+    }
+
+        function updateScore() {
+            document.getElementById("score").innerText = "Score: " + score;
+        }
+
+        function updateClock() {
+            document.getElementById("time").innerText = "Time: " + time;
+        }
+
+        function startGame() {
+    gameInterval = setInterval(function () {
+        time--;
+
+        if (time <= 0) {
+            endGame(false);
+        } else {
+            updateClock();
+        }
+    }, 1000);
+}
+
+        function endGame(isWin) {
+            clearInterval(gameInterval);
+
+            var gameStatus = document.getElementById("game-status");
+            gameStatus.style.display = "block";
+
+            if (isWin) {
+                gameStatus.innerText = "Congratulations! You won!";
+            } else {
+                gameStatus.innerText = "Game over!";
+            }
+        }
+    </script>
+</body>
+</html>

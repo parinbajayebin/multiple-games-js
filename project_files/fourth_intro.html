@@ -1,0 +1,92 @@
+<html>
+<head>
+<style>
+*{
+margin:0px;
+padding:0px;
+}
+
+*{
+  box-sizing:border-box;
+  font-family: 'Skranji', cursive;
+     animation:fade-in 2s cubic-bezier(.39,.575,.565,1.000) both;
+}
+
+@keyframes fade-in{0%{opacity:0}100%{opacity:1}}
+
+.bigimage{
+width:100vw;
+height:100vh;
+background-image:url("intro.jpg");
+background-size:cover;
+}
+
+.text{
+font-family:QuinqueFive;
+line-height:2.2;
+font-size:14px;
+max-width:850px;
+padding:1em;
+font-weight:bold;
+margin-top: -242px;
+margin-right:30px;
+}
+
+
+button {
+  background-color:#8b6c5c;
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 14px;
+  color:white;
+}
+
+button:hover {  
+  background-color: red;
+  color: white;
+}
+
+.previous {
+  background-color: white;
+  color: black;
+}
+
+.button{
+margin-top:670px;
+margin-left:1125px;
+}
+</style>
+</head>
+<body>
+<div class="bigimage">
+<form action="shuffle.html">
+<button class="button">▶</button>
+</form>
+<center>
+<div class="text"></div>
+<script>
+	const div=document.querySelector(".text");
+	const text="Ah, dear Ray, the illustrious quest of shuffling awaits your dexterous touch. A melange of cards yearn to be artfully intertwined, to dance with precision. Embark on this endeavor, dear Ray, and let your nimble fingers weave a tapestry of elegance, completing the shuffle quest with grace.";
+	
+	function texteffect(element,text,i=0){
+	if (i==0){
+	element.textContent=" ";
+	}
+	
+	element.textContent+=text[i];
+	
+	if(i==text.length-1)
+	{
+		return;
+	}
+	
+	setTimeout(()=>texteffect(element,text,i+1),50);
+	
+	}
+	
+	texteffect(div,text);
+</script>
+</div>
+</div>
+</body>
+</html>
